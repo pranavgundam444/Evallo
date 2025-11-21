@@ -1,28 +1,22 @@
+import API from "./api";
 import { useState } from "react";
 
 export default function Login({ setPage }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function submit(e) {
+    async function submit(e) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:4000/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    if (!res.ok) {
-      alert("Login failed");
-      return;
+    try {
+        const res = await API.post("/login", { email, password });
+        localStorage.setItem("token", res.data.token);
+        setPage("employees");
+    } catch (err) {
+        alert("Login failed");
+    }
     }
 
-    const data = await res.json();
-    localStorage.setItem("token", data.token);
-
-    setPage("employees");
-  }
 
   return (
     <form onSubmit={submit}>
